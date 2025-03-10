@@ -18,4 +18,7 @@ const router = createRouter({
   routes,
 });
 
+// Лог для проверки маршрутов
+console.log('Router initialized:', routes);
+
 export default router;
