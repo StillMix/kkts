@@ -1,5 +1,10 @@
 <script setup>
-const handleLogin = (e) => {};
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const handleLogin = (e) => {
+  router.push('/hello')
+};
 </script>
 
 <template>
