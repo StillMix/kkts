@@ -11,7 +11,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: '/src/index.html',
+        main: '/index.html',
         router: '/src/router/router.ts', // Убедись, что указал правильный путь к ts файлу
       },
     },
