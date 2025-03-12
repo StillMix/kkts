@@ -3,9 +3,17 @@ import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
   plugins: [vue()],
-  base: './', // Указываем базовый URL
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   build: {
-    outDir: 'dist', // Папка для сборки
-    assetsDir: 'assets', // Папка для ресурсов
+    rollupOptions: {
+      input: {
+        main: '/src/index.html',
+        router: '/src/router/router.ts', // Убедись, что указал правильный путь к ts файлу
+      },
+    },
   },
 });

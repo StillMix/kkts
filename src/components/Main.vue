@@ -1,21 +1,19 @@
-<script setup>
-import { ref } from 'vue'; // Импортируем ref из Vue
+<script setup lang="ts">
+import { ref } from 'vue';
 import Menu from './Menu.vue';
 
-// Создаем реактивную переменную для состояния меню
-const isMenuOpen = ref(false); // Состояние меню
+const isMenuOpen = ref<boolean>(false);
 
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value; // Функция для переключения меню
+const toggleMenu = (): void => {
+  isMenuOpen.value = !isMenuOpen.value;
 };
 </script>
 
+
 <template>
   <div class="main">
-    <!-- Передаем состояние меню в компонент Menu -->
-    <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event"  />
+    <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event" />
     <header class="main__header">
-      <!-- Добавляем обработчик клика на кнопку -->
       <button @click="toggleMenu" class="main__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
       </button>
@@ -24,38 +22,36 @@ const toggleMenu = () => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .main {
   display: flex;
   align-items: center;
   flex-direction: column;
-}
-.main__header {
-  margin-top: 5.34vw;
-  width: 92.961vw;
-  display: flex;
-  align-items: center;
+  &__header {
+    margin-top: 5.34vw;
+    width: 92.961vw;
+    display: flex;
+    align-items: center;
+    &__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 5.825vw;
+      height: 5.825vw;
+      img {
+        width: 5.825vw;
+        height: 5.825vw;
+        object-fit: contain;
+      }
+    }
+    &__title {
+      margin-left: 4.854vw;
+      font-family: var(--second-family);
+      font-weight: 400;
+      font-size: 5.825vw;
+      color: #484848;
+    }
+  }
 }
 
-.main__header__btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 5.825vw;
-  height: 5.825vw;
-}
-
-.main__header__btn img {
-  width: 5.825vw;
-  height: 5.825vw;
-  object-fit: contain;
-}
-
-.main__header__title {
-  margin-left: 4.854vw;
-  font-family: var(--second-family);
-  font-weight: 400;
-  font-size: 5.825vw;
-  color: #484848;
-}
 </style>
