@@ -1,6 +1,10 @@
 @import './assets/fonts/FuturaPT/FuturaPt.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+body{
+	background-color: white;
+}
+
 :root {
 	--teal-dark-1: #0d1514;
 	--teal-dark-2: #121c1b;
