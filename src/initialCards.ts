@@ -3,6 +3,7 @@
 export interface SessionItem {
   name: string;
   teacher: string;
+  teacher2: string;
   start: string;
   end: string;
   class: string;
@@ -24,6 +25,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "8:30",
         end: "10:00",
         class: "КГУ373",
@@ -32,6 +34,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "12:15",
         end: "13:45",
         class: "КГУ373",
@@ -40,6 +43,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "10:15",
         end: "11:45",
         class: "КГУ373",
@@ -49,6 +53,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "17:00",
         end: "21:45",
         class: "КГУ373",
@@ -57,11 +62,13 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: "Ефремова О.В.",
         start: "21:45",
         end: "23:59",
         class: "КГУ373",
         color: "#dc08d3",
       },
+      
     ],
   },
   {
@@ -71,6 +78,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "8:30",
         end: "10:00",
         class: "КГУ373",
@@ -79,6 +87,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "12:15",
         end: "13:45",
         class: "КГУ373",
@@ -87,6 +96,7 @@ export const session: SessionGroup[] = [
       {
         name: "Русский язык с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "10:15",
         end: "11:45",
         class: "315",
@@ -95,6 +105,7 @@ export const session: SessionGroup[] = [
       {
         name: "Русский язык с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "14:00",
         end: "15:30",
         class: "315",
@@ -104,11 +115,12 @@ export const session: SessionGroup[] = [
   },
   {
     group: "1 ПЕД Б",
-    date: "17.03.2025",
+    date: "16.03.2025",
     session: [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "8:30",
         end: "10:00",
         class: "КГУ373",
@@ -117,6 +129,7 @@ export const session: SessionGroup[] = [
       {
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: 'Ефремова О.В.',
         start: "12:15",
         end: "13:45",
         class: "КГУ373",
@@ -125,6 +138,7 @@ export const session: SessionGroup[] = [
       {
         name: "Русский язык с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "10:15",
         end: "11:45",
         class: "315",
@@ -133,6 +147,7 @@ export const session: SessionGroup[] = [
       {
         name: "Русский язык с методикой преподавания",
         teacher: "Ефремова О.В.",
+        teacher2: '',
         start: "14:00",
         end: "15:30",
         class: "315",

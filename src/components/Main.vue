@@ -169,7 +169,7 @@ const getTimeRemaining = (lessonEnd: string) => {
                   <p
                     class="main__main__card__session__info__cont__classes__clock__teacher"
                   >
-                    <img src="../assets/mainTeacher.svg" /> {{ lesson.teacher }}
+                    <img src="../assets/mainTeacher.svg" /> {{ lesson.teacher }} {{ lesson.teacher2 }}
                   </p>
                   <p
                     class="main__main__card__session__info__cont__classes__clock__start"
@@ -204,9 +204,10 @@ const getTimeRemaining = (lessonEnd: string) => {
 
 <style scoped lang="scss">
 .color {
-  width: 4px;
+  width: 0.971vw;
 }
 .main {
+  padding-bottom: 7.282vw;
   min-height: 100vh;
   background-color: #f3f5ff;
   display: flex;
@@ -245,32 +246,32 @@ const getTimeRemaining = (lessonEnd: string) => {
   &__main {
     width: 100%;
     display: flex;
-    gap: 22px;
-    margin-top: 22px;
+    gap: 5.34vw;
+    margin-top: 5.34vw;
     flex-direction: column;
     align-items: center;
 
     &__card {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      width: 383px;
+      gap: 2.427vw;
+      width: 92.961vw;
 
       &__data {
         font-family: var(--font-family);
         font-weight: 400;
-        font-size: 30px;
+        font-size: 7.282vw;
         color: #484848;
       }
 
       &__session {
         overflow: hidden;
-        border-radius: 10px;
-        width: 383px;
+        border-radius: 2.427vw;
+        width: 92.961vw;
         display: flex;
-        gap: 9px;
+        gap: 2.184vw;
         background: #fff;
-        min-height: 89px;
+        min-height: 21.602vw;
         &__info {
           display: flex;
           flex-direction: column;
@@ -278,64 +279,65 @@ const getTimeRemaining = (lessonEnd: string) => {
           &__cont {
             display: flex;
             justify-content: space-between;
-            width: 360px;
+            width: 87.379vw;
             &__classes {
               &__title {
                 font-family: var(--font-family);
                 font-weight: 500;
-                font-size: 16px;
+                font-size: 3.883vw;
                 line-height: 100%;
                 color: #000;
               }
               &__clock {
-                margin-top: 8px;
-                width: 252px;
+                margin-top: 1.942vw;
+                width: 61.165vw;
                 display: flex;
                 justify-content: space-between;
                 &__teacher {
                   font-family: var(--font-family);
                   font-weight: 500;
-                  font-size: 14px;
+                  font-size: 3.398vw;
                   line-height: 100%;
                   color: #000;
                   opacity: 0.4;
-                  height: 20px;
+                  height: 4.854vw;
                   display: flex;
                   align-items: center;
                   img {
-                    width: 20px;
-                    height: 20px;
-                    margin-right: 3px;
+                    width: 4.854vw;
+                    height: 4.854vw;
+                    margin-right: 0.728vw;
                   }
                 }
                 &__start {
                   font-family: var(--font-family);
                   font-weight: 500;
-                  font-size: 14px;
+                  font-size: 3.398vw;
                   line-height: 100%;
                   color: #000;
                   opacity: 0.4;
-                  height: 20px;
+                  height: 4.854vw;
                   display: flex;
                   align-items: center;
+                  flex-shrink: 0;
                   img {
-                    width: 20px;
-                    height: 20px;
-                    margin-right: 3px;
+                    width: 4.854vw;
+                    height: 4.854vw;
+                    margin-right: 0.728vw;
                   }
                 }
               }
             }
             &__class {
-              min-width: 77px;
-              height: 53px;
+              min-width: 18.689vw;
+              height: 12.864vw;
               display: flex;
               align-items: center;
               justify-content: center;
               &__text {
                 font-family: var(--font-family);
                 font-weight: 500;
-                font-size: 24px;
+                font-size: 5.825vw;
                 line-height: 100%;
                 text-align: right;
                 color: #000;
@@ -345,7 +347,7 @@ const getTimeRemaining = (lessonEnd: string) => {
         }
         &.current-lesson {
           background: #2c3b88;
-          min-height: 131px;
+          min-height: 31.796vw;
           .main__main__card__session{
             &__info {
               &__cont {
@@ -374,23 +376,23 @@ const getTimeRemaining = (lessonEnd: string) => {
     }
 
         .countdown {
-          min-height: 35px;
-          margin-top: 10px;
-          border-top: 1px solid rgba(255, 255, 255, 0.2);
+          min-height: 8.495vw;
+          margin-top: 2.427vw;
+          border-top: 0.243vw solid rgba(255, 255, 255, 0.2);
           display: flex;
           flex-direction: column;
           justify-content: end;
           &__text {
             font-family: var(--font-family);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 3.398vw;
             color: #fff;
             display: flex;
             align-items: center;
             img{
-              width: 24px;
-              height: 24px;
-              margin-right: 3px;
+              width: 5.825vw;
+              height: 5.825vw;
+              margin-right: 0.728vw;
             }
           }
         }
@@ -400,7 +402,7 @@ const getTimeRemaining = (lessonEnd: string) => {
 
   .no-sessions {
     text-align: center;
-    font-size: 16px;
+    font-size: 3.883vw;
     color: gray;
   }
 }
