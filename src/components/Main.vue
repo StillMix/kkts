@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import Menu from "./Menu.vue";
+import PopupLessInfo from "./PopupLessInfo.vue";
 import { session, SessionGroup } from "../initialCards";
 
 // Состояние меню
@@ -8,6 +9,23 @@ const isMenuOpen = ref<boolean>(false);
 const toggleMenu = (): void => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+
+const currentLesson = ref<any>(null);
+const isPopupLesOpen = ref<boolean>(false);
+
+const togglePopupLess = (less: any): void => {
+  currentLesson.value = less;  // Сохраняем информацию о выбранном уроке
+  isPopupLesOpen.value = !isPopupLesOpen.value;  // Переключаем состояние попапа
+  
+  // Добавляем или удаляем класс для блокировки прокрутки
+  if (isPopupLesOpen.value) {
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
+};
+
 
 // Функция получения текущей недели
 const getCurrentWeek = () => {
@@ -122,7 +140,7 @@ const getTimeRemaining = (lessonEnd: string) => {
 <template>
   <div class="main">
     <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event" />
-
+    <PopupLessInfo :isOpen="isPopupLesOpen" :lesson="currentLesson" @update:isOpen="isPopupLesOpen = $event"/>
     <header class="main__header">
       <button @click="toggleMenu" class="main__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
@@ -151,6 +169,7 @@ const getTimeRemaining = (lessonEnd: string) => {
         <div
           v-for="lesson in day.session"
           :key="lesson.start"
+          @click="togglePopupLess(lesson)"
           class="main__main__card__session"
           :class="{ 'current-lesson': getCurrentLesson(day) === lesson }"
         >
