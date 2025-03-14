@@ -63,7 +63,7 @@ const handleLogin = (e: Event): void => {
     }
   }
   &__title {
-    font-family: var(--second-family);
+    font-family: var(--font-family);
     font-weight: 900;
     font-size: 7.282vw;
     color: #2c3b88;
@@ -72,7 +72,7 @@ const handleLogin = (e: Event): void => {
     margin-top: 4.854vw;
   }
   &__subtitle {
-    font-family: var(--second-family);
+    font-family: var(--font-family);
     font-weight: 500;
     font-size: 4.369vw;
     color: #000;
@@ -87,7 +87,7 @@ const handleLogin = (e: Event): void => {
       width: 100%;
       display: block;
       &__title {
-        font-family: var(--second-family);
+        font-family: var(--font-family);
         font-weight: 500;
         font-size: 4.369vw;
         color: #000;
@@ -100,7 +100,7 @@ const handleLogin = (e: Event): void => {
         fill: #fff;
         border: 2px solid #e8e8e8;
         padding-left: 6.311vw;
-        font-family: var(--second-family);
+        font-family: var(--font-family);
         font-weight: 500;
         font-size: 4.369vw;
         color: #2c3b88;
@@ -117,7 +117,7 @@ const handleLogin = (e: Event): void => {
     &__forgetpass {
       width: 88.835vw;
       margin-top: 1.699vw;
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 600;
       font-size: 4.369vw;
       text-align: right;
@@ -150,7 +150,7 @@ const handleLogin = (e: Event): void => {
         transform: translate(-50%, -50%);
       }
       &__text {
-        font-family: var(--second-family);
+        font-family: var(--font-family);
         font-weight: 500;
         font-size: 4.369vw;
         color: #000;
@@ -164,7 +164,7 @@ const handleLogin = (e: Event): void => {
       height: 13.107vw;
       background: #2c3b88;
       margin-top: 5.583vw;
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 900;
       font-size: 4.369vw;
       text-align: center;

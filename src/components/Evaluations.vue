@@ -46,7 +46,7 @@ const toggleMenu = (): void => {
     }
     &__title {
       margin-left: 4.854vw;
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 400;
       font-size: 5.825vw;
       color: #484848;

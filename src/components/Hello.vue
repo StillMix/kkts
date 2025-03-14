@@ -61,14 +61,14 @@ const handleHello = (e: Event): void => {
     transform: translate(-50%, 0);
     bottom: 3.406vh;
     &__title {
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 900;
       font-size: 7.282vw;
       color: #fff;
     }
     &__subtitle {
       margin-top: 1.214vw;
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 500;
       font-size: 4.369vw;
       color: #fff;
@@ -80,7 +80,7 @@ const handleHello = (e: Event): void => {
       margin-top: 4.126vw;
       background: #fff;
       border-radius: 48.544vw;
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 900;
       font-size: 4.369vw;
       text-align: center;

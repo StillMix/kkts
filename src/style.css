@@ -33,10 +33,9 @@ body{
 }
 
 :root {
-  --font-family: "SF Pro", sans-serif;
-  --second-family: "Futura PT", sans-serif;
-  --third-family: "Inter V", sans-serif;
-}
+	--font-family: "Futura PT", sans-serif;
+	--second-family: "Inter V", sans-serif;
+  }
 
 *{
 	box-sizing: border-box;

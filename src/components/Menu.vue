@@ -104,7 +104,7 @@ const initialLinks: Link[] = [
       padding-bottom: 1.825vh;
       margin-top: 5.839vh;
       &__title {
-        font-family: var(--second-family);
+        font-family: var(--font-family);
         font-weight: 900;
         font-size: 5.825vw;
         margin-left: 0.728vw;
@@ -135,7 +135,7 @@ const initialLinks: Link[] = [
         margin-left: 4.854vw;
       }
       &__text {
-        font-family: var(--second-family);
+        font-family: var(--font-family);
         font-weight: 400;
         font-size: 4.369vw;
         color: #484848;
@@ -145,7 +145,7 @@ const initialLinks: Link[] = [
       background: #a0b0ff73;
     }
     &__link.active &__link__text {
-      font-family: var(--second-family);
+      font-family: var(--font-family);
       font-weight: 400;
       font-size: 4.369vw;
       color: #2c3b88;
@@ -163,7 +163,7 @@ const initialLinks: Link[] = [
         align-items: center;
         gap: 1.214vw;
         margin-top: auto;
-        font-family: var(--second-family);
+        font-family: var(--font-family);
         font-weight: 400;
         font-size: 18px;
         color: #484848;
