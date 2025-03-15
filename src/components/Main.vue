@@ -3,6 +3,9 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import Menu from "./Menu.vue";
 import PopupLessInfo from "./PopupLessInfo.vue";
 import { session, SessionGroup } from "../initialCards";
+import { student, StudentGroup } from "../initialCards";
+
+const currentStudent = ref(student[0]); // Выбираем первого ученика (можно менять)
 
 // Состояние меню
 const isMenuOpen = ref<boolean>(false);
@@ -74,7 +77,7 @@ onUnmounted(() => {
 const filteredSessions = computed(() => {
   return session
     .filter((s) => {
-      const sessionDate = s.date.split(".").reverse().join("-"); // YYYY-MM-DD
+      const sessionDate = s.date.split(".").reverse().join("-"); // Преобразуем дату
       return (
         sessionDate >= currentWeek.today.split(".").reverse().join("-") &&
         sessionDate <= currentWeek.end.split(".").reverse().join("-")
@@ -84,6 +87,10 @@ const filteredSessions = computed(() => {
       ...s,
       session: [...s.session]
         .filter((lesson) => {
+          // Фильтрация по группе
+          if (lesson.group !== currentStudent.value.group) return false;
+
+          // Фильтрация по времени (если сегодня, то убираем прошедшие)
           if (s.date === currentWeek.today) {
             return (
               lesson.end >
@@ -102,6 +109,7 @@ const filteredSessions = computed(() => {
     }))
     .filter((s) => s.session.length > 0);
 });
+
 
 // Функция определения текущего занятия
 const getCurrentLesson = (day: SessionGroup) => {
@@ -135,6 +143,13 @@ const getTimeRemaining = (lessonEnd: string) => {
 
   return `${hours}:${minutes}:${seconds}`;
 };
+
+const getStudentFirstName = computed(() => {
+  if (!currentStudent.value) return "";
+  const parts = currentStudent.value.fullname.split(" ");
+  return parts.length > 1 ? parts[1] : currentStudent.value.fullname;
+});
+
 </script>
 
 <template>
@@ -145,7 +160,7 @@ const getTimeRemaining = (lessonEnd: string) => {
       <button @click="toggleMenu" class="main__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
       </button>
-      <p class="main__header__title">Здравствуйте, Георгий!</p>
+      <p class="main__header__title">Здравствуйте, {{ getStudentFirstName }}</p>
     </header>
 
     <div class="main__main">
