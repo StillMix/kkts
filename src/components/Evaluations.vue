@@ -2,11 +2,26 @@
 import { ref, computed } from "vue";
 import Menu from "./Menu.vue";
 import { student, StudentGroup, StudentGroupOcenki } from "../initialCards";
-
+import PopupOcenki from "./PopupOcenki.vue";
 const isMenuOpen = ref<boolean>(false);
 
 const toggleMenu = (): void => {
   isMenuOpen.value = !isMenuOpen.value;
+};
+
+const currentOcen = ref<any>(null);
+const isPopupOcenOpen = ref<boolean>(false);
+
+const togglePopupOcen = (less: any): void => {
+  currentOcen.value = less;  // Сохраняем информацию о выбранном уроке
+  isPopupOcenOpen.value = !isPopupOcenOpen.value;  // Переключаем состояние попапа
+  
+  // Добавляем или удаляем класс для блокировки прокрутки
+  if (isPopupOcenOpen.value) {
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
 };
 
 const ocenkinum = ref<number[]>([]);
@@ -31,6 +46,7 @@ ocenkiScet();
 <template>
   <div class="evaluations">
     <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event" />
+    <PopupOcenki :isOpene="isPopupOcenOpen" :ocenk="currentOcen || {}" @update:isOpene="isPopupOcenOpen = $event"/>
     <header class="evaluations__header">
       <button @click="toggleMenu" class="evaluations__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
@@ -47,6 +63,7 @@ ocenkiScet();
         v-for="(subject, index) in studentoc"
         :key="index"
         class="evaluations__cards__card"
+        @click="togglePopupOcen(subject)"
       >
         <div
           :style="{ backgroundColor: subject.color }"
@@ -94,6 +111,7 @@ ocenkiScet();
   flex-direction: column;
   min-height: 100vh;
   background-color: #f3f5ff;
+  position: relative;
   &__header {
     margin-top: 5.34vw;
     width: 92.961vw;

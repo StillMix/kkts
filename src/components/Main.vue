@@ -155,7 +155,7 @@ const getStudentFirstName = computed(() => {
 <template>
   <div class="main">
     <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event" />
-    <PopupLessInfo :isOpen="isPopupLesOpen" :lesson="currentLesson" @update:isOpen="isPopupLesOpen = $event"/>
+    <PopupLessInfo :isOpen="isPopupLesOpen" :ocenk="currentLesson" @update:isOpen="isPopupLesOpen = $event"/>
     <header class="main__header">
       <button @click="toggleMenu" class="main__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
