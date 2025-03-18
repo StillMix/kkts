@@ -1,13 +1,35 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
+const login = ref(""); // Реактивное хранилище для логина
 
-const handleLogin = (e: Event): void => {
-  router.push('/hello');
+const handleLogin = (): void => {
+  let role = "student"; // По умолчанию студент
+
+  switch (login.value) {
+    case "test":
+      role = "teacher";
+      break;
+    case "testA":
+      role = "admin";
+      break;
+    case "testAT":
+      role = "teacher, admin";
+      break;
+    case "testRT":
+      role = "teacher, racp";
+      break;
+    case "testR":
+      role = "racp";
+      break;
+  }
+
+  localStorage.setItem("role", role); // Сохраняем в локальное хранилище
+  router.push("/hello"); // Перенаправление
 };
 </script>
-
 
 <template>
   <div class="login">
@@ -25,6 +47,7 @@ const handleLogin = (e: Event): void => {
           class="login__form__label__input"
           placeholder="Введите логин"
           type="text"
+          v-model="login"
         />
       </label>
       <label class="login__form__label">

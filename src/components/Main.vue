@@ -4,8 +4,7 @@ import Menu from "./Menu.vue";
 import PopupLessInfo from "./PopupLessInfo.vue";
 import { session, SessionGroup } from "../initialCards";
 import { student, StudentGroup } from "../initialCards";
-
-const currentStudent = ref(student[0]); // Выбираем первого ученика (можно менять)
+import { teacherme, TeacherMEGroup } from "../initialCards";
 
 // Состояние меню
 const isMenuOpen = ref<boolean>(false);
@@ -13,22 +12,25 @@ const toggleMenu = (): void => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
+const role = ref<string>(localStorage.getItem("role") ?? "");
 
+const currentUser = computed(() => {
+  return role.value === "teacher" ? teacherme[0] : student[0];
+});
 const currentLesson = ref<any>(null);
 const isPopupLesOpen = ref<boolean>(false);
 
 const togglePopupLess = (less: any): void => {
-  currentLesson.value = less;  // Сохраняем информацию о выбранном уроке
-  isPopupLesOpen.value = !isPopupLesOpen.value;  // Переключаем состояние попапа
-  
+  currentLesson.value = less; // Сохраняем информацию о выбранном уроке
+  isPopupLesOpen.value = !isPopupLesOpen.value; // Переключаем состояние попапа
+
   // Добавляем или удаляем класс для блокировки прокрутки
   if (isPopupLesOpen.value) {
-    document.body.classList.add('modal-open');
+    document.body.classList.add("modal-open");
   } else {
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove("modal-open");
   }
 };
-
 
 // Функция получения текущей недели
 const getCurrentWeek = () => {
@@ -88,7 +90,20 @@ const filteredSessions = computed(() => {
       session: [...s.session]
         .filter((lesson) => {
           // Фильтрация по группе
-          if (lesson.group !== currentStudent.value.group) return false;
+          if (role.value === "student") {
+            // Проверяем, что currentUser является объектом типа StudentGroup
+            if ("group" in currentUser.value && currentUser.value.group) {
+              if (lesson.group !== currentUser.value.group) return false;
+            }
+          } else if (role.value === "teacher") {
+            // Проверяем, что имя учителя совпадает с текущим
+            if (
+              lesson.teacher !== currentUser.value.name &&
+              lesson.teacher2 !== currentUser.value.name
+            ) {
+              return false;
+            }
+          }
 
           // Фильтрация по времени (если сегодня, то убираем прошедшие)
           if (s.date === currentWeek.today) {
@@ -110,19 +125,27 @@ const filteredSessions = computed(() => {
     .filter((s) => s.session.length > 0);
 });
 
-
 // Функция определения текущего занятия
 const getCurrentLesson = (day: SessionGroup) => {
-  const nowTime = Number(
-    now.value
-      .toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
-      .replace(":", "")
-  );
-  return day.session.find(
-    (lesson) =>
-      Number(lesson.start.replace(":", "")) <= nowTime &&
-      Number(lesson.end.replace(":", "")) > nowTime
-  );
+  const today = new Date();
+  const formattedToday = today.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  if (day.date === formattedToday) {
+    const nowTime = Number(
+      now.value
+        .toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
+        .replace(":", "")
+    );
+
+    return day.session.find(
+      (lesson) =>
+        Number(lesson.start.replace(":", "")) <= nowTime &&
+        Number(lesson.end.replace(":", "")) > nowTime
+    );
+  }
 };
 
 // Функция получения времени до конца урока (чч:мм:сс)
@@ -145,17 +168,20 @@ const getTimeRemaining = (lessonEnd: string) => {
 };
 
 const getStudentFirstName = computed(() => {
-  if (!currentStudent.value) return "";
-  const parts = currentStudent.value.fullname.split(" ");
-  return parts.length > 1 ? parts[1] : currentStudent.value.fullname;
+  if (!currentUser.value) return "";
+  const parts = currentUser.value.fullname.split(" ");
+  return parts.length > 1 ? parts[1] : currentUser.value.fullname;
 });
-
 </script>
 
 <template>
   <div class="main">
     <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event" />
-    <PopupLessInfo :isOpen="isPopupLesOpen" :ocenk="currentLesson" @update:isOpen="isPopupLesOpen = $event"/>
+    <PopupLessInfo
+      :isOpen="isPopupLesOpen"
+      :ocenk="currentLesson"
+      @update:isOpen="isPopupLesOpen = $event"
+    />
     <header class="main__header">
       <button @click="toggleMenu" class="main__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
@@ -203,7 +229,8 @@ const getStudentFirstName = computed(() => {
                   <p
                     class="main__main__card__session__info__cont__classes__clock__teacher"
                   >
-                    <img src="../assets/mainTeacher.svg" /> {{ lesson.teacher }} {{ lesson.teacher2 }}
+                    <img src="../assets/mainTeacher.svg" />
+                    {{ lesson.teacher }} {{ lesson.teacher2 }}
                   </p>
                   <p
                     class="main__main__card__session__info__cont__classes__clock__start"
@@ -382,32 +409,32 @@ const getStudentFirstName = computed(() => {
         &.current-lesson {
           background: #2c3b88;
           min-height: 31.796vw;
-          .main__main__card__session{
+          .main__main__card__session {
             &__info {
               &__cont {
-               &__classes {
-              &__title {
-                color: #fff;
-              }
-          
-              &__clock {
-                &__teacher {
-                  color: #fff;
+                &__classes {
+                  &__title {
+                    color: #fff;
+                  }
+
+                  &__clock {
+                    &__teacher {
+                      color: #fff;
+                    }
+                    &__start {
+                      color: #fff;
+                    }
+                  }
                 }
-                &__start {
-                  color: #fff;
+                &__class {
+                  &__text {
+                    color: #fff;
+                  }
                 }
-              }
-            }
-            &__class{
-              &__text{
-                color: #fff;
               }
             }
           }
         }
-      }
-    }
 
         .countdown {
           min-height: 8.495vw;
@@ -423,7 +450,7 @@ const getStudentFirstName = computed(() => {
             color: #fff;
             display: flex;
             align-items: center;
-            img{
+            img {
               width: 5.825vw;
               height: 5.825vw;
               margin-right: 0.728vw;
