@@ -1,5 +1,6 @@
 // session.ts
 
+//studentme
 export interface StudentGroupOcenkiPredmet {
   name: string;
   data: string;
@@ -201,6 +202,7 @@ export const student: StudentGroup[] = [
   },
 ];
 
+//teacherme
 export interface TeacherGroups {
   name: string;
 }
@@ -231,6 +233,7 @@ export const teacherme: TeacherMEGroup[] = [
   },
 ];
 
+//lesson
 export interface SessionItem {
   group: string;
   name: string;
@@ -319,8 +322,8 @@ export const session: SessionGroup[] = [
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефимцева И.Б.",
         teacher2: "",
-        start: "8:30",
-        end: "10:00",
+        start: "08:30",
+        end: "08:50",
         class: "КГУ373",
         adress: "2 Этаж · г. Курск, ул. Кирова, д. 5",
         color: "#dc08d3",
@@ -330,7 +333,7 @@ export const session: SessionGroup[] = [
         name: "Теоретические основы начального курса математики с методикой преподавания",
         teacher: "Ефимцева И.Б.",
         teacher2: "",
-        start: "12:15",
+        start: "8:52",
         end: "13:45",
         class: "КГУ373",
         adress: "2 Этаж · г. Курск, ул. Кирова, д. 5",
@@ -411,6 +414,8 @@ export const session: SessionGroup[] = [
   },
 ];
 
+//Teacher
+
 export interface TeacherItem {
   name: string;
 }
@@ -456,4 +461,45 @@ export const teacher: TeacherGroup[] = [
       },
     ],
   },
+];
+
+//groups
+export interface StudentGroups {
+  name: string;
+}
+
+export interface Groups {
+  name: string;
+  students: StudentGroups[]
+}
+
+const groups:Groups[] = [
+  {
+    name: "1 ПЕД Б",
+    students: [
+      {
+        name: "Ибрагим",
+      },
+      {
+        name: "a",
+      },
+      {
+        name: "b",
+      },
+    ],
+  },
+  {
+    name: '1 PED C',
+    students: [
+      {
+        name: '2'
+      },
+      {
+        name: '3'
+      },
+      {
+        name: '4'
+      }
+    ]
+  }
 ];

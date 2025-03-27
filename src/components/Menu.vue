@@ -47,6 +47,13 @@ const initialLinks: Link[] = [
     to: "/evaluations",
   },
 ];
+
+const logout = (): void => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("role");
+  localStorage.removeItem("user");
+  router.push("/");
+};
 </script>
 
 <template>
@@ -71,7 +78,7 @@ const initialLinks: Link[] = [
         </RouterLink>
       </nav>
       <div class="menu__popup__exit">
-        <button @click="router.push('/')" class="menu__popup__exit__btn">
+        <button @click="logout" class="menu__popup__exit__btn">
           <img alt="exit" src="../assets/exit.svg" />Выйти
         </button>
       </div>
@@ -176,5 +183,4 @@ const initialLinks: Link[] = [
     }
   }
 }
-
 </style>

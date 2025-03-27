@@ -1,33 +1,65 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
+// Реактивные переменные
+const login = ref("");
+const password = ref("");
 const router = useRouter();
-const login = ref(""); // Реактивное хранилище для логина
+const errorMessage = ref("");
 
-const handleLogin = (): void => {
-  let role = "student"; // По умолчанию студент
+// Функция для аутентификации
+const authenticate = async (username: string, password: string) => {
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:8000/auth/login",
+      { login: username, password: password },
+      { withCredentials: true }
+    );
 
-  switch (login.value) {
-    case "test":
-      role = "teacher";
-      break;
-    case "testA":
-      role = "admin";
-      break;
-    case "testAT":
-      role = "teacher, admin";
-      break;
-    case "testRT":
-      role = "teacher, racp";
-      break;
-    case "testR":
-      role = "racp";
-      break;
+    console.log("Ответ от сервера:", response.data);
+
+    // Если сервер возвращает токен или данные
+    if (response.data.access_token) {
+      localStorage.setItem("access_token", response.data.access_token);
+      localStorage.setItem("role", response.data.role);
+      const usersArr = [
+        {
+          role: response.data.role,
+          fullname: response.data.fullname,
+          name: response.data.name,
+          gmail: response.data.gmail,
+          login: response.data.login,
+          vk: response.data.vk,
+          group: response.data.group,
+          id: response.data.id,
+        },
+      ];
+
+      // Сохраняем в localStorage
+      localStorage.setItem("user", JSON.stringify(usersArr));
+
+      if (response.data.access_token) {
+        router.push("/hello");
+      }
+    }
+  } catch (error: any) {
+    if (error.response) {
+      // Сервер ответил, но с ошибкой (например, 401)
+      errorMessage.value =
+        error.response.data.detail || "Ошибка аутентификации!";
+    } else {
+      // Ошибка сети / проблема с сервером
+      errorMessage.value = "Не удалось подключиться к серверу!";
+    }
+    console.error("Ошибка при аутентификации:", errorMessage.value);
   }
+};
 
-  localStorage.setItem("role", role); // Сохраняем в локальное хранилище
-  router.push("/hello"); // Перенаправление
+// Обработчик события входа
+const handleLogin = () => {
+  authenticate(login.value, password.value);
 };
 </script>
 
@@ -56,16 +88,12 @@ const handleLogin = (): void => {
           class="login__form__label__input"
           placeholder="Введите пароль"
           type="password"
+          v-model="password"
         />
       </label>
       <button class="login__form__forgetpass" type="button">
         Забыл пароль!?
       </button>
-      <label class="login__form__check">
-        <input class="login__form__check__input" type="checkbox" />
-        <span class="login__form__check__custom"></span>
-        <p class="login__form__check__text">Запомнить меня</p>
-      </label>
       <button type="submit" class="login__form__btnsub">ВОЙТИ</button>
     </form>
   </div>

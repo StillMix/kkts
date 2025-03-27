@@ -10,11 +10,27 @@ defineProps({
 import { ref } from "vue";
 import PopupTeacher from "./PopupTeacher.vue";
 
-const currentTeach = ref<string>('');
+const currentTeach = ref<any>([]);
 const isPopupOpen = ref<boolean>(false);
-const togglePopup = (teach:string): void => {
-    currentTeach.value = teach;
-    isPopupOpen.value = !isPopupOpen.value;
+
+interface Teachers {
+  id: string;
+  fullname: string;
+  gmail: string;
+  vk: string;
+}
+const togglePopup = (teach: string): void => {
+  let teachers: Teachers[] = JSON.parse(
+    localStorage.getItem("teachers") || "[]"
+  );
+
+  const foundTeacher = teachers.find((i) => i.id.toString() === teach);
+
+  if (foundTeacher) {
+    currentTeach.value = foundTeacher;
+  }
+
+  isPopupOpen.value = !isPopupOpen.value;
 };
 
 const emit = defineEmits<{
@@ -30,14 +46,40 @@ const handlePopupLess = (event: Event): void => {
 };
 
 const handleBtnPopupLess = (): void => {
-    emit("update:isOpen", false);
-    document.body.classList.remove("modal-open");
+  emit("update:isOpen", false);
+  document.body.classList.remove("modal-open");
+};
+
+interface Teacher {
+  id: string;
+  name: string;
+}
+
+const fetchTeacher = (id: string): string | undefined => {
+  // Получаем данные о учителях из localStorage
+  let teachers: Teacher[] = JSON.parse(
+    localStorage.getItem("teachers") || "[]"
+  );
+
+  // Ищем учителя с нужным id
+  const teacher = teachers.find((i) => i.id.toString() === id);
+
+  // Если учитель найден, возвращаем его имя
+  if (teacher) {
+    return teacher.name;
+  } else {
+    return undefined;
+  }
 };
 </script>
 
 <template>
   <div v-if="isOpen" @click="handlePopupLess" class="popupless">
-    <PopupTeacher :isOpene="isPopupOpen" :teach="currentTeach" @update:isOpene="isPopupOpen = $event"/>
+    <PopupTeacher
+      :isOpene="isPopupOpen"
+      :teach="currentTeach"
+      @update:isOpene="isPopupOpen = $event"
+    />
     <div class="popupless__popup" v-if="lesson">
       <div class="popupless__popup__contt">
         <div class="popupless__popup__contt__colors">
@@ -53,14 +95,20 @@ const handleBtnPopupLess = (): void => {
       <button class="popupless__popup__el" @click="togglePopup(lesson.teacher)">
         <img src="../assets/mainTeacher.svg" />
         <div class="popupless__popup__el__con">
-          <p class="popupless__popup__el__con__title">{{ lesson.teacher }}</p>
+          <p class="popupless__popup__el__con__title">
+            {{ fetchTeacher(lesson.teacher) }}
+          </p>
           <img
             src="../assets/mainArr.svg"
             class="popupless__popup__el__con__arr"
           />
         </div>
       </button>
-      <button class="popupless__popup__el" @click="togglePopup(lesson.teacher2)" v-if="lesson.teacher2">
+      <button
+        class="popupless__popup__el"
+        @click="togglePopup(lesson.teacher2)"
+        v-if="lesson.teacher2"
+      >
         <img src="../assets/mainTeacher.svg" />
         <div class="popupless__popup__el__con">
           <p class="popupless__popup__el__con__title">{{ lesson.teacher2 }}</p>
@@ -69,7 +117,7 @@ const handleBtnPopupLess = (): void => {
             class="popupless__popup__el__con__arr"
           />
         </div>
-    </button>
+      </button>
       <div class="popupless__popup__el">
         <img src="../assets/mainClock.svg" />
         <div class="popupless__popup__el__con">
@@ -86,7 +134,9 @@ const handleBtnPopupLess = (): void => {
           </p>
         </div>
       </div>
-      <button @click="handleBtnPopupLess()" class="popupless__popup__btn">НАЗАД</button>
+      <button @click="handleBtnPopupLess()" class="popupless__popup__btn">
+        НАЗАД
+      </button>
     </div>
   </div>
 </template>

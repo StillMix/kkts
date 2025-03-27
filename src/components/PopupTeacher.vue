@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"; // Импортируем computed
+import { ref, computed, onMounted, watchEffect  } from "vue";// Импортируем computed
 import { defineProps, defineEmits } from "vue"; // Импортируем defineProps и defineEmits
 
 // Определяем пропсы
@@ -9,12 +9,18 @@ const props = defineProps({
     required: true,
   },
   teach: {
-    type: String,
+    type: Object,
     required: true,
   }, // предполагаем, что teach это объект с полем name
 });
 
-import { teacher, TeacherGroup } from "../initialCards";
+
+
+onMounted(() => {
+  console.log(props.teach.value)// Используем teacher.value для логирования
+});
+
+
 
 // Эмитируем событие
 const emit = defineEmits<{
@@ -35,22 +41,7 @@ const handleBtnPopupTeach = (): void => {
   document.body.classList.remove("modal-open");
 };
 
-// Вычисляемое свойство для поиска fullname
-const teacherFullName = computed(() => {
-  // Ищем преподавателя по имени
-  const foundTeacher = teacher.find((t) => t.name === props.teach);
-  return foundTeacher ? foundTeacher.fullname : ""; // Возвращаем fullname или пустую строку, если не найдено
-});
-const teacherMail = computed(() => {
-  // Ищем преподавателя по имени
-  const foundTeacher = teacher.find((t) => t.name === props.teach);
-  return foundTeacher ? foundTeacher.gmail : ""; // Возвращаем fullname или пустую строку, если не найдено
-});
-const teacherVk = computed(() => {
-  // Ищем преподавателя по имени
-  const foundTeacher = teacher.find((t) => t.name === props.teach);
-  return foundTeacher ? foundTeacher.vk : ""; // Возвращаем fullname или пустую строку, если не найдено
-});
+
 
 const copyToClipboard = async (text: string) => {
   try {
@@ -59,11 +50,15 @@ const copyToClipboard = async (text: string) => {
     console.error("Не удалось скопировать в буфер обмена: ", err);
   }
 };
+
+
+
+
 </script>
 
 <template>
   <div v-if="props.isOpene" @click="handlePopupTeach" class="popupteach">
-    <div class="popupteach__popup" @click.stop>
+    <div v-if="props.teach" class="popupteach__popup" @click.stop>
       <div class="popupteach__popup__header">
         <img
           src="../assets/mainteachbck.svg"
@@ -74,14 +69,14 @@ const copyToClipboard = async (text: string) => {
           class="popupteach__popup__header__imgteach"
         />
         <!-- Отображаем fullname преподавателя -->
-        <p class="popupteach__popup__header__teach">{{ teacherFullName }}</p>
+        <p class="popupteach__popup__header__teach">{{ props.teach.fullname }}</p>
         <div class="popupteach__popup__header__con">
           <p class="popupteach__popup__header__con__gmail">
             <img src="../assets/mainGmail.svg" />
-            {{ teacherMail }}
+            {{ props.teach.gmail }}
           </p>
           <button
-            @click="copyToClipboard(teacherMail)"
+            @click="copyToClipboard(props.teach.gmail)"
             class="popupteach__popup__header__con__btn"
           >
             Скопировать <img src="../assets/mainArrW.svg" />
@@ -91,12 +86,12 @@ const copyToClipboard = async (text: string) => {
       <div class="popupteach__popup__main">
         <a
           class="popupteach__popup__main__text"
-          :href="teacherVk"
+          :href="props.teach.vk"
           target="_blank"
           rel="noopener noreferrer"
         >
           <img src="../assets/url.svg" />
-          {{ teacherVk }}
+          {{ props.teach.vk }}
         </a>
         <button
           @click="handleBtnPopupTeach()"

@@ -2,37 +2,149 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import Menu from "./Menu.vue";
 import PopupLessInfo from "./PopupLessInfo.vue";
-import { session, SessionGroup } from "../initialCards";
-import { student, StudentGroup } from "../initialCards";
-import { teacherme, TeacherMEGroup } from "../initialCards";
+import axios from "axios";
 
-// Состояние меню
 const isMenuOpen = ref<boolean>(false);
 const toggleMenu = (): void => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
 const role = ref<string>(localStorage.getItem("role") ?? "");
-
 const currentUser = computed(() => {
-  return role.value === "teacher" ? teacherme[0] : student[0];
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
 });
+
+const socket = new WebSocket(
+  `ws://127.0.0.1:8000/ws/${currentUser.value[0].id}`
+);
+
+socket.onopen = () => {
+  console.log("WebSocket connected");
+  socket.send("Hello from client"); // Отправляем сообщение на сервер
+};
+
+socket.onmessage = (event) => {
+  if (event.data) {
+    let message = event.data || ""; // Выводим полученное сообщение
+
+    // Проверка на исключение "Hello from server"
+    if (message !== "Hello from server") {
+      const parts = message.split(":");
+
+      // Проверка на количество частей после разделения
+      if (parts.length >= 2) {
+        const key = parts[0];           
+        const value = parts[1].trim();  
+
+        console.log([key, value]);
+
+        // Проверка на совпадение с "newlesson" и значением группы
+        if (key === "newlesson") {
+          if (value === currentUser.value[0].group) {
+            console.log('совпало')
+            days.value = [];
+            fetchDays();
+          }
+        }
+      } else {
+        console.error("Невалидное сообщение: разделитель ':' не найден. Получено сообщение: ", message);
+      }
+    }
+  }
+};
+
+
+
+
+
+
+
+socket.onclose = () => {
+  console.log("WebSocket disconnected");
+};
+
+socket.onerror = (error) => {
+  console.log("WebSocket error: ", error);
+};
+
 const currentLesson = ref<any>(null);
 const isPopupLesOpen = ref<boolean>(false);
 
 const togglePopupLess = (less: any): void => {
-  currentLesson.value = less; // Сохраняем информацию о выбранном уроке
-  isPopupLesOpen.value = !isPopupLesOpen.value; // Переключаем состояние попапа
+  if (role.value === "user") {
+    currentLesson.value = less;
+    isPopupLesOpen.value = !isPopupLesOpen.value;
 
-  // Добавляем или удаляем класс для блокировки прокрутки
-  if (isPopupLesOpen.value) {
-    document.body.classList.add("modal-open");
-  } else {
-    document.body.classList.remove("modal-open");
+    if (isPopupLesOpen.value) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
   }
 };
 
-// Функция получения текущей недели
+const now = ref(new Date());
+let timer: ReturnType<typeof setInterval> | null = null;
+onMounted(() => {
+  timer = setInterval(() => {
+    now.value = new Date();
+  }, 1000);
+});
+onUnmounted(() => {
+  if (timer) clearInterval(timer);
+});
+
+// Переменные для данных с сервера
+const days = ref<any[]>([]);
+const sessions = ref<Record<number, any[]>>({});
+
+// Функция получения дней с сервера
+const fetchDays = async (forceUpdate: boolean = false) => {
+  // Если forceUpdate равно true, то всегда запрашиваем данные
+  if (forceUpdate || days.value.length === 0) {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/teachers/");
+      if (response.data.message === "Учителя получены") {
+        localStorage.setItem("teachers", JSON.stringify(response.data.users));
+      }
+    } catch (error) {
+      console.error("Ошибка при получении дней:", error);
+    }
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/lesson/");
+      if (response.data.message === "Распиние получено") {
+        days.value = response.data.lessons;
+        fetchSessionsForDays();
+      }
+    } catch (error) {
+      console.error("Ошибка при получении дней:", error);
+    }
+  }
+};
+
+// Функция получения занятий по каждому дню
+const fetchSessionsForDays = async () => {
+  for (const day of days.value) {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/lesson/${day.id}/session/`
+      );
+      if (response.data.message === "Пары получены") {
+        const lessons = response.data.session;
+        sessions.value[day.id] = lessons;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+
+// Загружаем данные при монтировании
+onMounted(async () => {
+  await fetchDays();
+});
+
 const getCurrentWeek = () => {
   const today = new Date();
   const dayOfWeek = today.getDay(); // 0 - вс, 1 - пн, ..., 6 - сб
@@ -61,52 +173,45 @@ const getCurrentWeek = () => {
 // Получаем текущую неделю
 const currentWeek = getCurrentWeek();
 
-// Текущее время (обновляется каждую секунду)
-const now = ref(new Date());
-
-// Обновление времени каждую секунду
-let timer: ReturnType<typeof setInterval> | null = null;
-onMounted(() => {
-  timer = setInterval(() => {
-    now.value = new Date();
-  }, 1000);
-});
-onUnmounted(() => {
-  if (timer) clearInterval(timer);
-});
-
 // Фильтрация и сортировка занятий
 const filteredSessions = computed(() => {
-  return session
-    .filter((s) => {
-      const sessionDate = s.date.split(".").reverse().join("-"); // Преобразуем дату
-      return (
-        sessionDate >= currentWeek.today.split(".").reverse().join("-") &&
-        sessionDate <= currentWeek.end.split(".").reverse().join("-")
-      );
-    })
+  const sortedDays = days.value
     .map((s) => ({
       ...s,
-      session: [...s.session]
+      sessionDate: s.date.split(".").reverse().join("-"), // Преобразуем дату в формат ISO
+    }))
+    .sort((a, b) => (a.sessionDate > b.sessionDate ? 1 : -1)); // Сортируем по дате
+  return sortedDays
+    .filter((s) => {
+      const sessionDate = s.date; 
+      return (
+        sessionDate >= currentWeek.today &&
+        sessionDate <= currentWeek.end
+      );
+    })
+    .map((day) => ({
+      ...day,
+      session: (sessions.value[day.id] || [])
         .filter((lesson) => {
           // Фильтрация по группе
-          if (role.value === "student") {
+ 
+          if (role.value === "user") {
             // Проверяем, что currentUser является объектом типа StudentGroup
-            if ("group" in currentUser.value && currentUser.value.group) {
-              if (lesson.group !== currentUser.value.group) return false;
+
+            if ("group" in currentUser.value[0] && currentUser.value[0].group) {
+              if (lesson.group !== currentUser.value[0].group) return false;
             }
           } else if (role.value === "teacher") {
-            // Проверяем, что имя учителя совпадает с текущим
             if (
-              lesson.teacher !== currentUser.value.name &&
-              lesson.teacher2 !== currentUser.value.name
+              lesson.teacher !== currentUser.value[0].id.toString() &&
+              lesson.teacher2 !== currentUser.value[0].id.toString()
             ) {
               return false;
             }
           }
-
+          
           // Фильтрация по времени (если сегодня, то убираем прошедшие)
-          if (s.date === currentWeek.today) {
+          if (day.date === currentWeek.today) {
             return (
               lesson.end >
               now.value.toLocaleTimeString("ru-RU", {
@@ -117,16 +222,21 @@ const filteredSessions = computed(() => {
           }
           return true;
         })
+        
         .sort(
           (a, b) =>
             Number(a.start.replace(":", "")) - Number(b.start.replace(":", ""))
         ),
     }))
-    .filter((s) => s.session.length > 0);
+    .filter((day) => day.session.length > 0);
+});
+const getStudentFirstName = computed(() => {
+  if (!currentUser.value || !currentUser.value[0]?.fullname) return "";
+  const parts = currentUser.value[0].fullname.split(" ");
+  return parts.length > 1 ? parts[1] : currentUser.value[0].fullname;
 });
 
-// Функция определения текущего занятия
-const getCurrentLesson = (day: SessionGroup) => {
+const getCurrentLesson = (day: any) => {
   const today = new Date();
   const formattedToday = today.toLocaleDateString("ru-RU", {
     day: "2-digit",
@@ -141,14 +251,13 @@ const getCurrentLesson = (day: SessionGroup) => {
     );
 
     return day.session.find(
-      (lesson) =>
+      (lesson: any) =>
         Number(lesson.start.replace(":", "")) <= nowTime &&
         Number(lesson.end.replace(":", "")) > nowTime
     );
   }
 };
 
-// Функция получения времени до конца урока (чч:мм:сс)
 const getTimeRemaining = (lessonEnd: string) => {
   const [endHours, endMinutes] = lessonEnd.split(":").map(Number);
   const nowTime = now.value;
@@ -164,14 +273,33 @@ const getTimeRemaining = (lessonEnd: string) => {
   const minutes = String(Math.floor(diff / 60)).padStart(2, "0");
   const seconds = String(diff % 60).padStart(2, "0");
 
-  return `${hours}:${minutes}:${seconds}`;
+  return `${hours}:${minutes}:${seconds}`; // ✅ Правильная шаблонная строка
 };
 
-const getStudentFirstName = computed(() => {
-  if (!currentUser.value) return "";
-  const parts = currentUser.value.fullname.split(" ");
-  return parts.length > 1 ? parts[1] : currentUser.value.fullname;
-});
+
+
+interface Teacher {
+  id: string;
+  name: string;
+}
+
+const fetchTeacher = (id: string): string | undefined => {
+  // Получаем данные о учителях из localStorage
+  let teachers: Teacher[] = JSON.parse(localStorage.getItem("teachers") || "[]");
+
+  // Ищем учителя с нужным id
+  const teacher = teachers.find(i => i.id.toString() === id);
+   console.log(teacher)
+  // Если учитель найден, возвращаем его имя
+  if (teacher) {
+    return teacher.name;
+  } else {
+    return undefined;
+  }
+};
+
+
+
 </script>
 
 <template>
@@ -179,9 +307,10 @@ const getStudentFirstName = computed(() => {
     <Menu :isOpen="isMenuOpen" @update:isOpen="isMenuOpen = $event" />
     <PopupLessInfo
       :isOpen="isPopupLesOpen"
-      :ocenk="currentLesson"
+      :lesson="currentLesson || {}"
       @update:isOpen="isPopupLesOpen = $event"
     />
+
     <header class="main__header">
       <button @click="toggleMenu" class="main__header__btn">
         <img alt="menu" src="../assets/menu.svg" />
@@ -192,7 +321,7 @@ const getStudentFirstName = computed(() => {
     <div class="main__main">
       <div
         v-for="day in filteredSessions"
-        :key="day.date"
+        :key="day.id"
         class="main__main__card"
       >
         <p class="main__main__card__data">
@@ -210,7 +339,7 @@ const getStudentFirstName = computed(() => {
         <div
           v-for="lesson in day.session"
           :key="lesson.start"
-          @click="togglePopupLess(lesson)"
+          @click="() => togglePopupLess(lesson)"
           class="main__main__card__session"
           :class="{ 'current-lesson': getCurrentLesson(day) === lesson }"
         >
@@ -230,8 +359,12 @@ const getStudentFirstName = computed(() => {
                     class="main__main__card__session__info__cont__classes__clock__teacher"
                   >
                     <img src="../assets/mainTeacher.svg" />
-                    {{ lesson.teacher }} {{ lesson.teacher2 }}
+                    <span v-if="role === 'teacher'">{{ lesson.group }}</span>
+                    <span v-else-if="role === 'user'"
+                      >{{ fetchTeacher(lesson.teacher) }} {{ fetchTeacher(lesson.teacher2) }}</span
+                    >
                   </p>
+
                   <p
                     class="main__main__card__session__info__cont__classes__clock__start"
                   >
@@ -242,7 +375,7 @@ const getStudentFirstName = computed(() => {
               </div>
               <div class="main__main__card__session__info__cont__class">
                 <p class="main__main__card__session__info__cont__class__text">
-                  {{ lesson.class }}
+                  {{ lesson.clases }}
                 </p>
               </div>
             </div>

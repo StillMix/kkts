@@ -8,11 +8,14 @@ const props = defineProps({
     required: true,
   },
   ocenk: Object,
+  subject: Object,
 });
 
 const emit = defineEmits<{
   (event: "update:isOpene", value: boolean): void;
 }>();
+
+
 
 const handlePopupOcen = (event: Event): void => {
   const target = event.target as HTMLElement | null;
@@ -34,18 +37,18 @@ const activeButtons = ref<string[]>([]);
 // Фильтрация оценок по нажатию на кнопки
 const filteredOcenki = computed(() => {
   if (activeButtons.value.length === 0) {
-    return props.ocenk?.ocenki || [];
+    return props.ocenk || [];
   }
-  return (props.ocenk?.ocenki || []).filter((oc: { name: string }) =>
+  return (props.ocenk || []).filter((oc: { name: string }) =>
     activeButtons.value.includes(oc.name)
   );
 });
 
 // Для вычисления уникальных имен
 const uniqueNames = computed(() => {
-  return props.ocenk && props.ocenk.ocenki
+  return props.ocenk && props.ocenk
     ? Array.from(
-        new Set(props.ocenk.ocenki.map((oc: { name: string }) => oc.name))
+        new Set(props.ocenk.map((oc: { name: string }) => oc.name))
       )
     : [];
 });
@@ -64,9 +67,8 @@ const ocenkinum = ref<number[]>([]);
 const srbal = ref<number>(0);
 
 const ocenkiScet = () => {
-  if (!props.ocenk || !props.ocenk.ocenki) return;
-
-  ocenkinum.value = props.ocenk.ocenki.map((oc: { ocenka: string }) =>
+  if (!props.ocenk || !props.ocenk[0]?.ocenka) return;
+  ocenkinum.value = props.ocenk.map((oc: { ocenka: string }) =>
     parseFloat(oc.ocenka)
   );
 
@@ -79,6 +81,10 @@ const ocenkiScet = () => {
 watchEffect(() => {
   ocenkiScet();
 });
+
+
+
+
 </script>
 
 <template>
@@ -105,15 +111,15 @@ watchEffect(() => {
         </p>
         <p class="popupocen__popup__info__kolvo">
           <img src="../assets/ocenka.svg" />
-          Всего оценок: {{ ocenk.ocenki.length }}
+          Всего оценок: {{ props.ocenk?.length }}
         </p>
         <p
           class="popupocen__popup__info__attest"
           :style="{
-            color: ocenk.attes === 'Аттестован' ? '#169a00' : '#9a0000',
+            color: props.subject?.attes === 'Аттестован' ? '#169a00' : '#9a0000',
           }"
         >
-          {{ ocenk.attes }}
+          {{ props.subject?.attes }}
         </p>
       </div>
       <div class="popupocen__popup__btns">
